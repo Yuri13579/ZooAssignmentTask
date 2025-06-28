@@ -31,27 +31,6 @@ app.UseCors("AllowViteDev");
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// 3️⃣  Existing weather endpoint
-app.MapGet("/weatherforecast", () =>
-{
-    var summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild",
-        "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-
-    return Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast(
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-    .ToArray();
-});
-
-// 4️⃣  New calculate endpoint
-//    - Expects a JSON body matching CalculateRequest
-//    - Injects ICostCalculator from DI
 app.MapGet("/dailycost", ( ICostCalculator calc) =>
 {
     // Call your business logic
@@ -68,11 +47,4 @@ app.MapFallbackToFile("index.html");
 
 app.Run();
 
-
-// ——— DTOs & Records ———
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
 

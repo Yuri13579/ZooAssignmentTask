@@ -8,13 +8,14 @@ const DailyCostDisplay = () => {
 
 useEffect(() => {
   const fetchData = (retryCount = 0) => {
-    fetch('https://localhost:32774/dailycost')
+    fetch('https://localhost:32772/dailycost')
       .then(response => response.json())
       .then(data => {
         setDailyCost(data.dailyCost);
         setLoading(false);
       })
       .catch(error => {
+
         console.error('Error fetching data:', error);
         if (retryCount < 3) {  // retries up to 3 times
           setTimeout(() => fetchData(retryCount + 1), 3000); // retry after 3 seconds
