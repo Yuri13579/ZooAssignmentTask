@@ -6,7 +6,8 @@ const DailyCostDisplay = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+useEffect(() => {
+  const fetchData = (retryCount = 0) => {
     fetch('https://localhost:32774/dailycost')
       .then(response => response.json())
       .then(data => {
@@ -15,10 +16,17 @@ const DailyCostDisplay = () => {
       })
       .catch(error => {
         console.error('Error fetching data:', error);
-        setError('Failed to fetch data');
-        setLoading(false);
+        if (retryCount < 3) {  // retries up to 3 times
+          setTimeout(() => fetchData(retryCount + 1), 3000); // retry after 3 seconds
+        } else {
+          setError('Failed to fetch data');
+          setLoading(false);
+        }
       });
-  }, []);
+  };
+
+  fetchData();
+}, []);
 
   if (loading) return <CircularProgress />;
   if (error) return <Alert severity="error">{error}</Alert>;
