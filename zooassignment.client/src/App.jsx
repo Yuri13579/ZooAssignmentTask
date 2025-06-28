@@ -7,13 +7,8 @@ function App() {
     useEffect(() => {
         async function populateWeatherData() {
         try {
-            const response = await fetch('https://localhost:32772/weatherforecast', {
-            mode: 'cors',               // make sure you’ve allowed this origin in ASP.NET
-            headers: {                  // optional, but explicit
-                'Accept': 'application/json'
-            }
-            });
-
+            const response = await fetch('https://localhost:32772/weatherforecast');
+        
             if (!response.ok) {
             // non-2xx status
             throw new Error(`Server returned ${response.status} – ${response.statusText}`);
