@@ -3,38 +3,64 @@ using ZooAssignment.Server.Services.Interfaces;
 
 namespace ZooAssignment.Server.Services
 {
-    public class DailyCostCalculator(IPriceProvider prices, IAnimalInfoProvider info, IZooProvider zoo) : ICostCalculator
+    public class DailyCostCalculator(IPriceProvider prices, IAnimalInfoProvider info, IZooProvider zoo)
+        : ICostCalculator
     {
-        public double CalculateDailyCost()
+        public DailyCostResult CalculateDailyCost()
         {
             var priceMap = prices.GetPrices();
-            var types = info.GetAnimalTypes().ToDictionary(t => t.Species, t => t, System.StringComparer.OrdinalIgnoreCase);
-            double meatKg = 0, fruitKg = 0;
+            var types = info.GetAnimalTypes().ToDictionary(t => t.Species, t => t, StringComparer.OrdinalIgnoreCase);
+            var details = new List<AnimalCostDetail>();
+
+            double total = 0;
+
             foreach (var animal in zoo.GetAnimals())
             {
-                if (!types.TryGetValue(animal.Species, out var info))
+                if (!types.TryGetValue(animal.Species, out var animalInfo))
                     continue;
-                double food = info.Rate * animal.WeightKg;
-                switch (info.Diet)
+
+                double foodAmount = animalInfo.Rate * animal.WeightKg;
+                double meatKg = 0, fruitKg = 0;
+
+                switch (animalInfo.Diet)
                 {
                     case DietType.Meat:
-                        meatKg += food;
+                        meatKg = foodAmount;
                         break;
+
                     case DietType.Fruit:
-                        fruitKg += food;
+                        fruitKg = foodAmount;
                         break;
+
                     case DietType.Both:
-                        meatKg += food * info.MeatPercentage / 100.0;
-                        fruitKg += food * (100 - info.MeatPercentage) / 100.0;
+                        meatKg = foodAmount * animalInfo.MeatPercentage / 100.0;
+                        fruitKg = foodAmount - meatKg;
                         break;
                 }
+
+                double cost = 0;
+                if (priceMap.TryGetValue("Meat", out var meatPrice))
+                    cost += meatKg * meatPrice;
+                if (priceMap.TryGetValue("Fruit", out var fruitPrice))
+                    cost += fruitKg * fruitPrice;
+
+                details.Add(new AnimalCostDetail
+                {
+                    Animal = animal.Name,
+                    Species = animal.Species,
+                    MeatKg = meatKg,
+                    FruitKg = fruitKg,
+                    Cost = cost
+                });
+
+                total += cost;
             }
-            double total = 0;
-            if (priceMap.TryGetValue("Meat", out var meatPrice))
-                total += meatPrice * meatKg;
-            if (priceMap.TryGetValue("Fruit", out var fruitPrice))
-                total += fruitPrice * fruitKg;
-            return total;
+
+            return new DailyCostResult
+            {
+                TotalCost = total,
+                Breakdown = details
+            };
         }
     }
 }

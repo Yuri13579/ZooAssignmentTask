@@ -1,7 +1,9 @@
-﻿namespace ZooAssignment.Server.Services.Interfaces
+﻿using ZooAssignment.Server.Models;
+
+namespace ZooAssignment.Server.Services.Interfaces
 {
     public interface ICostCalculator
     {
-        double CalculateDailyCost();
+        DailyCostResult  CalculateDailyCost();
     }
 }
