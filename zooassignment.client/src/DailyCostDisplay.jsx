@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Container, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Alert } from '@mui/material';
 
 const DailyCostDisplay = () => {
   const [dailyCost, setDailyCost] = useState(null);
@@ -19,37 +20,39 @@ const DailyCostDisplay = () => {
       });
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <CircularProgress />;
+  if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Daily Zoo Feeding Costs</h1>
-      <h2 className="text-xl font-semibold mb-4">Total Cost: ${dailyCost.totalCost.toFixed(2)}</h2>
+    <Container>
+      <Typography variant="h4" gutterBottom>Daily Zoo Feeding Costs</Typography>
+      <Typography variant="h6" gutterBottom>Total Cost: ${dailyCost.totalCost.toFixed(2)}</Typography>
 
-      <table className="min-w-full bg-white rounded-lg shadow overflow-hidden">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="px-4 py-2">Animal</th>
-            <th className="px-4 py-2">Species</th>
-            <th className="px-4 py-2">Meat (kg)</th>
-            <th className="px-4 py-2">Fruit (kg)</th>
-            <th className="px-4 py-2">Cost ($)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {dailyCost.breakdown.map((item, index) => (
-            <tr key={index} className="text-center border-t">
-              <td className="px-4 py-2">{item.animal}</td>
-              <td className="px-4 py-2">{item.species}</td>
-              <td className="px-4 py-2">{item.meatKg.toFixed(2)}</td>
-              <td className="px-4 py-2">{item.fruitKg.toFixed(2)}</td>
-              <td className="px-4 py-2">{item.cost.toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Animal</TableCell>
+              <TableCell>Species</TableCell>
+              <TableCell align="right">Meat (kg)</TableCell>
+              <TableCell align="right">Fruit (kg)</TableCell>
+              <TableCell align="right">Cost ($)</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {dailyCost.breakdown.map((item, index) => (
+              <TableRow key={index}>
+                <TableCell>{item.animal}</TableCell>
+                <TableCell>{item.species}</TableCell>
+                <TableCell align="right">{item.meatKg.toFixed(2)}</TableCell>
+                <TableCell align="right">{item.fruitKg.toFixed(2)}</TableCell>
+                <TableCell align="right">{item.cost.toFixed(2)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Container>
   );
 };
 
