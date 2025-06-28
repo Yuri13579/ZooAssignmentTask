@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36109.1 d17.14
+VisualStudioVersion = 17.14.36109.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "zooassignment.client", "zooassignment.client\zooassignment.client.esproj", "{D310EFBE-9A28-A630-163F-072868F7D68C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZooAssignment.Server", "ZooAssignment.Server\ZooAssignment.Server.csproj", "{AE0F6268-B1AA-44B5-B5B7-929E8D3E300D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZooAssignment.Server.Tests", "ZooAssignment.Server.Tests\ZooAssignment.Server.Tests.csproj", "{605B1AEF-6027-49F0-9F07-31DA4B36BA64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +25,10 @@ Global
 		{AE0F6268-B1AA-44B5-B5B7-929E8D3E300D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE0F6268-B1AA-44B5-B5B7-929E8D3E300D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE0F6268-B1AA-44B5-B5B7-929E8D3E300D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{605B1AEF-6027-49F0-9F07-31DA4B36BA64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{605B1AEF-6027-49F0-9F07-31DA4B36BA64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{605B1AEF-6027-49F0-9F07-31DA4B36BA64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{605B1AEF-6027-49F0-9F07-31DA4B36BA64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
