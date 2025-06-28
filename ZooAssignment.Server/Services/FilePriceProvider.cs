@@ -1,15 +1,13 @@
-﻿using ZooAssignment.Server.Services.Interfaces;
+﻿using Microsoft.Extensions.Options;
+using ZooAssignment.Server.Models;
+using ZooAssignment.Server.Services.Interfaces;
 
 namespace ZooAssignment.Server.Services
 {
-    public class FilePriceProvider : IPriceProvider
+    public class FilePriceProvider(IOptions<DataFilesOptions> opts,
+        IWebHostEnvironment env) : IPriceProvider
     {
-        private readonly string _filePath;
-
-        public FilePriceProvider(string filePath)
-        {
-            _filePath = filePath;
-        }
+        private readonly string _filePath = Path.Combine(env.ContentRootPath, opts.Value.Prices);
 
         public IDictionary<string, double> GetPrices()
         {

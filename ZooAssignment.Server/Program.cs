@@ -1,34 +1,37 @@
-﻿using ZooAssignment.Server.Services;
+﻿using ZooAssignment.Server.Models;
+using ZooAssignment.Server.Services;
 using ZooAssignment.Server.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1️⃣  Register CORS and specify your React/Vite origin:
+// 1️⃣  CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowViteDev", policy =>
     {
         policy
-            .WithOrigins("https://localhost:56116")   // ← your React app’s URL
+            .WithOrigins("https://localhost:56116")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
 });
 
-builder.Services.AddTransient<ICostCalculator, DailyCostCalculator>();
+builder.Services.Configure<DataFilesOptions>(
+    builder.Configuration.GetSection("DataFiles"));
 
-// Add services to the container.
+builder.Services.AddTransient<IPriceProvider,FilePriceProvider>();
+builder.Services.AddTransient<IAnimalInfoProvider, FileAnimalInfoProvider>();
+builder.Services.AddTransient<IZooProvider, FileZooProvider>();
+builder.Services.AddTransient<ICostCalculator, DailyCostCalculator>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
-// 3️⃣  Enable the CORS policy _before_ your endpoints
 app.UseCors("AllowViteDev");
-
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
+// 3️⃣  Existing weather endpoint
 app.MapGet("/weatherforecast", () =>
 {
     var summaries = new[]
@@ -38,19 +41,38 @@ app.MapGet("/weatherforecast", () =>
     };
 
     return Enumerable.Range(1, 5).Select(index =>
-            new WeatherForecast(
-                DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                Random.Shared.Next(-20, 55),
-                summaries[Random.Shared.Next(summaries.Length)]
-            ))
-        .ToArray();
+        new WeatherForecast(
+            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+            Random.Shared.Next(-20, 55),
+            summaries[Random.Shared.Next(summaries.Length)]
+        ))
+    .ToArray();
 });
 
-app.MapFallbackToFile("/index.html");
+// 4️⃣  New calculate endpoint
+//    - Expects a JSON body matching CalculateRequest
+//    - Injects ICostCalculator from DI
+app.MapGet("/dailycost", ( ICostCalculator calc) =>
+{
+    // Call your business logic
+    var dailyCost = calc.CalculateDailyCost();
+    // Return as JSON
+    return Results.Ok(new { dailyCost });
+})
+.WithName("CalculateDailyCost")
+.Produces<double>(StatusCodes.Status200OK)
+.ProducesProblem(StatusCodes.Status400BadRequest);
+
+// 5️⃣  SPA fallback
+app.MapFallbackToFile("index.html");
 
 app.Run();
+
+
+// ——— DTOs & Records ———
 
 internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
+

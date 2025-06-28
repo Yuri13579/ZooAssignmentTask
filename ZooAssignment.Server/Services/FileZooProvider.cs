@@ -1,17 +1,15 @@
 ﻿using System.Globalization;
 using System.Xml.Linq;
+using Microsoft.Extensions.Options;
 using ZooAssignment.Server.Models;
 using ZooAssignment.Server.Services.Interfaces;
 
 namespace ZooAssignment.Server.Services
 {
-    public class FileZooProvider : IZooProvider
+    public class FileZooProvider(IOptions<DataFilesOptions> opts,
+        IWebHostEnvironment env) : IZooProvider
     {
-        private readonly string _filePath;
-        public FileZooProvider(string filePath)
-        {
-            _filePath = filePath;
-        }
+        private readonly string _filePath = Path.Combine(env.ContentRootPath, opts.Value.Zoo);
 
         public IEnumerable<ZooAnimal> GetAnimals()
         {
